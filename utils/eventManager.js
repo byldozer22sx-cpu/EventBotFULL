@@ -57,10 +57,8 @@ function buildEmbed(client) {
   }
 
   return new EmbedBuilder()
-    .setTitle(`📋 ${config.eventTitle}`)
-    .setDescription(`${data.closed ? '🔒 **Запись закрыта**\n\n' : ''}🟢 **Свободно:** ${freeCount}\n🔴 **Занято:** ${takenCount}\n\n${lines.join('\n')}`)
-    .setFooter({ text: `${client.user.username} • запись на места` })
-    .setTimestamp();
+  .setTitle(` ${config.eventTitle}`)
+  .setDescription(`${data.closed ? ' **Запись закрыта**\n\n' : ''} **Свободно:** ${freeCount}\n **Занято:** ${takenCount}\n\n${lines.join('\n')}`);
 }
 
 function buildButtons() {
