@@ -122,10 +122,10 @@ async function updatePanel(client) {
     const channel = await client.channels.fetch(data.panel.channelId);
     const message = await channel.messages.fetch(data.panel.messageId);
 
-    await message.edit({
-      embeds: [buildEmbed(client)],
-      components: buildButtons(client)
-    });
+  await message.edit({
+  embeds: [],
+  components: buildButtons(client)
+});
   } catch (error) {
     console.error('Не удалось обновить панель:', error.message);
   }
