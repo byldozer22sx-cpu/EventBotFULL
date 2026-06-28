@@ -73,10 +73,10 @@ function buildButtons(client) {
 
       if (userId) {
         const user = client.users.cache.get(userId);
-        label = user ? (user.globalName || user.username) : 'Занято';
+       label = user ? `${i}. ${user.globalName || user.username}` : `${i}. Занято`;
 
-        if (label.length > 15) {
-          label = label.slice(0, 12) + '...';
+       if (label.length > 20) {
+  label = label.slice(0, 17) + '...';
         }
       }
 
