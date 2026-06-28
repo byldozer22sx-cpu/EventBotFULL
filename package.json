@@ -1,0 +1,1 @@
+{"name":"eventbot","version":"1.0.0","description":"Discord event signup bot","main":"index.js","scripts":{"start":"node index.js","deploy":"node deploy-commands.js"},"dependencies":{"discord.js":"^14.21.0"},"engines":{"node":">=20"}}
