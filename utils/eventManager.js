@@ -96,11 +96,9 @@ function buildButtons(client) {
 }
 
 async function sendPanel(interaction) {
-  const embed = buildEmbed(interaction.client);
   const rows = buildButtons(interaction.client);
 
   const message = await interaction.channel.send({
-    embeds: [embed],
     components: rows
   });
 
