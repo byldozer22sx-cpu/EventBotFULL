@@ -94,6 +94,8 @@ async function deleteOldPanel(client, panel) {
 
 async function sendPanel(interaction) {
   const data = loadData();
+  data.taken = {};
+data.closed = false;
 
   await deleteOldPanel(interaction.client, data.panel);
 
