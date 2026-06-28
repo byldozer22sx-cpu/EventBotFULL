@@ -50,18 +50,15 @@ function buildEmbed(client) {
   const takenCount = Object.keys(data.taken).length;
   const freeCount = slots - takenCount;
 
-  const lines = [];
-  for (let i = 1; i <= slots; i++) {
-    const userId = data.taken[String(i)];
-    lines.push(`**${i}.** ${userId ? `<@${userId}>` : ''}`);
-  }
-
   return new EmbedBuilder()
-  .setTitle(` ${config.eventTitle}`)
-  .setDescription(`${data.closed ? ' **Запись закрыта**\n\n' : ''} **Свободно:** ${freeCount}\n **Занято:** ${takenCount}\n\n${lines.join('\n')}`);
+    .setDescription(
+      `📋 **${config.eventTitle}**\n\n` +
+      `🟢 **Свободно:** ${freeCount}\n` +
+      `🔴 **Занято:** ${takenCount}`
+    );
 }
 
-function buildButtons() {
+function buildButtons(client) {
   const config = getConfig();
   const data = loadData();
   const rows = [];
@@ -69,16 +66,29 @@ function buildButtons() {
 
   for (let start = 1; start <= slots; start += 5) {
     const row = new ActionRowBuilder();
+
     for (let i = start; i < start + 5 && i <= slots; i++) {
-      const taken = Boolean(data.taken[String(i)]);
+      const userId = data.taken[String(i)];
+      let label = String(i);
+
+      if (userId) {
+        const user = client.users.cache.get(userId);
+        label = user ? (user.globalName || user.username) : 'Занято';
+
+        if (label.length > 15) {
+          label = label.slice(0, 12) + '...';
+        }
+      }
+
       row.addComponents(
         new ButtonBuilder()
           .setCustomId(`slot_${i}`)
-          .setLabel(String(i))
-          .setStyle(taken ? ButtonStyle.Danger : ButtonStyle.Success)
+          .setLabel(label)
+          .setStyle(userId ? ButtonStyle.Danger : ButtonStyle.Success)
           .setDisabled(Boolean(data.closed))
       );
     }
+
     rows.push(row);
   }
 
@@ -87,8 +97,12 @@ function buildButtons() {
 
 async function sendPanel(interaction) {
   const embed = buildEmbed(interaction.client);
-  const rows = buildButtons();
-  const message = await interaction.channel.send({ embeds: [embed], components: rows });
+  const rows = buildButtons(interaction.client);
+
+  const message = await interaction.channel.send({
+    embeds: [embed],
+    components: rows
+  });
 
   const data = loadData();
   data.panel = {
@@ -107,7 +121,11 @@ async function updatePanel(client) {
   try {
     const channel = await client.channels.fetch(data.panel.channelId);
     const message = await channel.messages.fetch(data.panel.messageId);
-    await message.edit({ embeds: [buildEmbed(client)], components: buildButtons() });
+
+    await message.edit({
+      embeds: [buildEmbed(client)],
+      components: buildButtons(client)
+    });
   } catch (error) {
     console.error('Не удалось обновить панель:', error.message);
   }
@@ -123,6 +141,7 @@ async function handleSlotButton(interaction) {
   }
 
   const currentOwner = data.taken[slot];
+
   if (currentOwner && currentOwner !== interaction.user.id) {
     await interaction.reply({ content: `❌ Место ${slot} уже занято.`, ephemeral: true });
     return;
@@ -144,6 +163,7 @@ async function handleSlotButton(interaction) {
 
   data.taken[slot] = interaction.user.id;
   saveData(data);
+
   await updatePanel(interaction.client);
   await interaction.reply({ content: `✅ Ты занял место ${slot}.`, ephemeral: true });
 }
@@ -158,6 +178,7 @@ async function resetSlots(interaction) {
   data.taken = {};
   data.closed = false;
   saveData(data);
+
   await updatePanel(interaction.client);
   await interaction.reply({ content: '✅ Все места очищены.', ephemeral: true });
 }
@@ -171,8 +192,12 @@ async function toggleClosed(interaction, closed) {
   const data = loadData();
   data.closed = closed;
   saveData(data);
+
   await updatePanel(interaction.client);
-  await interaction.reply({ content: closed ? '🔒 Запись закрыта.' : '🔓 Запись открыта.', ephemeral: true });
+  await interaction.reply({
+    content: closed ? '🔒 Запись закрыта.' : '🔓 Запись открыта.',
+    ephemeral: true
+  });
 }
 
 module.exports = {
