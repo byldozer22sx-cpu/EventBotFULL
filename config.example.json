@@ -1,7 +1,0 @@
-{
-  "token": "TOKEN_HERE",
-  "clientId": "CLIENT_ID_HERE",
-  "guildId": "GUILD_ID_HERE",
-  "slots": 20,
-  "eventTitle": "Запись на ивент"
-}
