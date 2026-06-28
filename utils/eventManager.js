@@ -122,8 +122,7 @@ async function updatePanel(client) {
     const channel = await client.channels.fetch(data.panel.channelId);
     const message = await channel.messages.fetch(data.panel.messageId);
 
-  await message.edit({
-  embeds: [],
+ await message.edit({
   components: buildButtons(client)
 });
   } catch (error) {
