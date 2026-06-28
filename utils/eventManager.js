@@ -53,7 +53,7 @@ function buildEmbed(client) {
   const lines = [];
   for (let i = 1; i <= slots; i++) {
     const userId = data.taken[String(i)];
-    lines.push(`**${i}.** ${userId ? `<@${userId}>` : 'свободно'}`);
+    lines.push(`**${i}.** ${userId ? `<@${userId}>` : ''}`);
   }
 
   return new EmbedBuilder()
