@@ -97,6 +97,16 @@ function buildButtons(client) {
 
 async function sendPanel(interaction) {
   const rows = buildButtons(interaction.client);
+  const oldData = loadData();
+
+if (oldData.panel?.channelId && oldData.panel?.messageId) {
+  const oldChannel = await interaction.client.channels.fetch(oldData.panel.channelId).catch(() => null);
+  const oldMessage = oldChannel
+    ? await oldChannel.messages.fetch(oldData.panel.messageId).catch(() => null)
+    : null;
+
+  if (oldMessage) await oldMessage.delete().catch(() => {});
+}
 
   const message = await interaction.channel.send({
     components: rows
